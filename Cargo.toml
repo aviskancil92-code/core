@@ -24,7 +24,6 @@ version-compare = "0.2.0"
 const_format = "0.2.32"
 anyhow = "1.0.40"
 lines_lossy = "0.1.0"
-normpath = "1.2"
 
 # --- native (desktop/DLL) only: not available/meaningful on wasm32 ---
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -46,6 +45,7 @@ gta-ide-parser = "0.0.4"
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winver", "winuser"] }
 version_info = "0.0.6"
+normpath = "1.2"
 
 # --- wasm target only ---
 [target.'cfg(target_arch = "wasm32")'.dependencies]

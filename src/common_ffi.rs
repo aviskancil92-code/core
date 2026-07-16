@@ -1,4 +1,4 @@
-use libc::c_char;
+use std::os::raw::c_char;
 pub type PChar = *const c_char;
 
 pub fn pchar_to_string<'a>(s: PChar) -> Option<String> {

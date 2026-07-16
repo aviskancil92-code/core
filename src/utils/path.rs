@@ -29,6 +29,30 @@ pub fn resolve_path(p: &str, parent_file: Option<&PathBuf>) -> Option<PathBuf> {
 
 
 pub fn normalize_file_name(file_name: &Path) -> Option<PathBuf> {
-    use normpath::PathExt;
-    Some(file_name.normalize_virtually().ok()?.into_path_buf())
+    #[cfg(windows)]
+    {
+        use normpath::PathExt;
+        Some(file_name.normalize_virtually().ok()?.into_path_buf())
+    }
+
+    // `normpath`'s `normalize_virtually` (lexical normalization, no filesystem
+    // access) is only available on Windows. On other targets -- including
+    // wasm32, which has no real filesystem to canonicalize against anyway --
+    // fall back to a plain lexical normalization (collapse `.`/`..`
+    // components without touching disk).
+    #[cfg(not(windows))]
+    {
+        use std::path::Component;
+        let mut result = PathBuf::new();
+        for component in file_name.components() {
+            match component {
+                Component::ParentDir => {
+                    result.pop();
+                }
+                Component::CurDir => {}
+                other => result.push(other.as_os_str()),
+            }
+        }
+        Some(result)
+    }
 }
